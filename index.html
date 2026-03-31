@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phone Security Log</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f4f4f9; }
+        .log-box { background: white; border: 1px solid #ccc; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 300px; margin: auto; }
+        #inputArea { border-bottom: 2px solid #eee; margin-bottom: 15px; padding-bottom: 15px; }
+        input { margin: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 80%; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .history { text-align: left; font-size: 0.9em; }
+        .history-item { border-bottom: 1px solid #eee; padding: 8px 0; color: #333; font-weight: bold; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="log-box">
+        <h2>Security Log</h2>
+        
+        <div id="inputArea">
+            <p>Set Last Change:</p>
+            <input type="date" id="datePicker">
+            <input type="time" id="timePicker">
+            <br>
+            <button onclick="saveData()">Update Log</button>
+        </div>
+
+        <div class="history">
+            <strong>Current Status:</strong>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            renderHistory();
+        };
+
+        function saveData() {
+            const d = document.getElementById('datePicker').value;
+            const t = document.getElementById('timePicker').value;
+            
+            if(!d || !t) return alert("Please select both date and time.");
+
+            // Save to history
+            let history = JSON.parse(localStorage.getItem('lockHistory')) || [];
+            history.unshift(`${d} at ${t}`);
+            localStorage.setItem('lockHistory', JSON.stringify(history));
+            
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('lockHistory')) || [];
+            const listDiv = document.getElementById('historyList');
+            const inputArea = document.getElementById('inputArea');
+
+            if(history.length > 0) {
+                // Display only the most recent change
+                listDiv.innerHTML = `<div class="history-item">Last updated: ${history[0]}</div>`;
+                // Hide the edit button and inputs
+                inputArea.classList.add('hidden');
+            } else {
+                listDiv.innerHTML = "No logs found.";
+            }
+        }
+    </script>
+</body>
+</html>
